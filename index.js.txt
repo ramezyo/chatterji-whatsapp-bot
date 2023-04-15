@@ -1,0 +1,37 @@
+'use strict';
+
+const functions = require('firebase-functions');
+const { WebhookClient } = require('dialogflow-fulfillment');
+const { Text } = require('dialogflow-fulfillment');
+const { Card } = require('dialogflow-fulfillment');
+const { Suggestion } = require('dialogflow-fulfillment');
+const twilio = require('twilio');
+
+process.env.DEBUG = 'dialogflow:debug'; // enables lib debugging statements
+
+exports.whatsappWebhook = functions.https.onRequest((request, response) => {
+  const agent = new WebhookClient({ request, response });
+  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
+
+  function sendWhatsAppMessage(agent) {
+    const recipientNumber = "whatsapp:+9613074003";
+    const message = agent.query;
+
+    const client = new twilio('<AC28ff4949a93f7deea9cf6628e4dbb52a>', '<2a7c256385f83a3a6cf1c74bd1639a4c>');
+    return client.messages.create({
+      from: 'whatsapp:+14155238886',
+      to: recipientNumber,
+      body: message
+    }).then(() => {
+      agent.add(`Message sent to WhatsApp: ${message}`);
+    }).catch((error) => {
+      console.error(error);
+      agent.add(`Failed to send message to WhatsApp.`);
+    });
+  }
+
+  let intentMap = new Map();
+  intentMap.set('SendWhatsAppMessage', sendWhatsAppMessage);
+  agent.handleRequest(intentMap);
+});
