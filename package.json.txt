@@ -1,0 +1,16 @@
+{
+  "name": "dialogflow-whatsapp-webhook",
+  "version": "1.0.0",
+  "description": "Dialogflow webhook for WhatsApp integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "14"
+  },
+  "dependencies": {
+    "dialogflow-fulfillment": "^0.6.1",
+    "twilio": "^3.49.0"
+  }
+}
